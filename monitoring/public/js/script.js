@@ -5,10 +5,16 @@ import { setupListener } from './status.js';
 window.onload = () => {
 	display.setupMonitoringChart();
 
-	callbacks = {
-		instanceUp: (msg) => {},
-		instanceDown: (msg) => {},
-		instanceUpdate: (msg) => {}
+	let callbacks = {
+		instanceUp: (msg) => {
+			return display.addBar(msg.name, msg.cnt);
+		},
+		instanceDown: (msg) => {
+			removeBar(msg.id);
+		},
+		instanceUpdate: (msg) => {
+			updateBar(msg.id, msg.cnt);
+		}
 	};
 
 	setupListener(callbacks);

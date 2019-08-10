@@ -7,5 +7,5 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 5555
+EXPOSE 8080
 ENTRYPOINT [ "npm", "run", "start" ]

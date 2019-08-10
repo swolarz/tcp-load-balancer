@@ -6,9 +6,6 @@ import random
 import argparse
 
 
-SERVICE_URL = 'http://localhost:5000'
-
-
 req_stats_lock = threading.Lock()
 req_stats = {
     'avg_resp_millis': 0
@@ -21,7 +18,7 @@ def get_request_delay_millis():
     with req_stats_lock:
         delay = req_stats['avg_resp_millis']
 
-    delay += random.randint(-30, 30)
+    delay += random.randint(-30, 25)
     delay = max([delay, 0])
 
     return delay
@@ -63,15 +60,15 @@ def log_request_delay():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--service', required=False, default='http://localhost:5000/')
+    parser.add_argument('--workers', required=False, type=int, default=16)
     
     args = parser.parse_args()
-    loop = asyncio.get_event_loop()
 
-    for _ in range(16):
+    loop = asyncio.get_event_loop()
+    for _ in range(args.workers):
         asyncio.async(consume_service(loop, args.service))
 
     asyncio.async(log_request_delay())
-
     loop.run_forever()
 
 

@@ -1,24 +1,22 @@
 
 const statusWebsockUrl = () => 'ws://' + document.location.host + '/status';
 
-const prepUpMsg = (upMsg) => {
-	return upMsg;
-};
+const prepUpMsg = (upMsg) => upMsg;
+const prepDownMsg = (downMsg) => downMsg;
+const prepReqMsg = (reqMsg) => reqMsg;
 
-const prepDownMsg = (downMsg) => {
-	return downMsg;
-};
-
-const prepReqMsg = (reqMsg) => {
-	return prepReqMsg;
-};
-
-const handleStatusMessage = (msgEvent, callbacks) => {
+const handleStatusMessage = (ws, msgEvent, callbacks) => {
 	let msgJson = JSON.parse(msgEvent.data);
 	let [msgType, msg] = msgJson;
 
 	if (msgType === 'up') {
-		callbacks.instanceUp(prepUpMsg(msg));
+		let entryId = callbacks.instanceUp(prepUpMsg(msg));
+		let resp = {
+			type: 'display-init',
+			displayId: entryId
+		};
+
+		ws.send(JSON.stringify(resp));
 	}
 	else if (msgType === 'down') {
 		callbacks.instanceDown(prepDownMsg(msg));
@@ -33,8 +31,7 @@ const handleStatusMessage = (msgEvent, callbacks) => {
 
 const setupListener = (callbacks) => {
 	var statusWebsock = new WebSocket(statusWebsockUrl());
-
-	statusWebsock.onmessage = (msgEvent) => handleStatusMessage(msgEvent, callbacks);
+	statusWebsock.onmessage = (msgEvent) => handleStatusMessage(statusWebsock, msgEvent, callbacks);
 };
 
 export { setupListener };

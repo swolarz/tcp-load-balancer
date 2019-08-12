@@ -10,18 +10,12 @@ const handleStatusMessage = (ws, msgEvent, callbacks) => {
 	let [msgType, msg] = msgJson;
 
 	if (msgType === 'up') {
-		let entryId = callbacks.instanceUp(prepUpMsg(msg));
-		let resp = {
-			type: 'display-init',
-			displayId: entryId
-		};
-
-		ws.send(JSON.stringify(resp));
+		callbacks.instanceUp(prepUpMsg(msg));
 	}
 	else if (msgType === 'down') {
 		callbacks.instanceDown(prepDownMsg(msg));
 	}
-	else if (msgType === 'req') {
+	else if (msgType === 'updt') {
 		callbacks.instanceUpdate(prepReqMsg(msg));
 	}
 	else {
@@ -35,3 +29,4 @@ const setupListener = (callbacks) => {
 };
 
 export { setupListener };
+

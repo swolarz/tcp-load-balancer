@@ -1,0 +1,22 @@
+version: "3.7"
+
+
+
+services:
+    service:
+        build: ./service
+        network_mode: "host"
+        ports:
+            - 5000:5000
+        # entrypoint: /bin/sh
+        command: --host="127.0.0.1" --name="test-instance" --monitoring="ws://localhost:8080/listener"
+        # stdin_open: true
+        # tty: true
+
+    monitoring:
+        build: ./monitoring
+        network_mode: "host"
+        ports:
+            - 8080:8080
+
+

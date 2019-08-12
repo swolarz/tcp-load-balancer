@@ -1,33 +1,57 @@
-var subscribers = {};
+var subscribers = [];
+var instances = {};
 
-const registerSubscriber = (ws) => {
-	let subscriber = {
-		displayId: -1
-	};
 
-	ws.on('message', (msg) => {
-		msg = JSON.parse(msg);
+const notifyChangedInstances = (changedInstanceNames, targets, create = false) => {
+	let msgType = (create === true ? 'up' : 'updt');
 
-		if (msg.type === 'display-init') {
-			subscriber.displayId = msg.displayId;
-		}
+	changedInstanceNames.forEach((instanceName) => {
+		let instance = instances[instanceName];
+
+		targets.forEach((subscriber) => {
+			let msg = [msgType, { name: instanceName, cnt: instance.reqs }];
+			subscriber.ws.send(JSON.stringify(msg));
+		});
 	});
 };
 
-const 
+const notifyRemovedInstances = (removedInstanceNames, targets) => {
+	let msgType = 'down';
+
+	removedInstanceNames.forEach((instance) => {
+		targets.forEach((subscriber) => {
+			let msg = [msgType, { name: instance }];
+			subscriber.ws.send(JSON.stringify(msg));
+		});
+	});
+};
 
 const handleInstanceUpdate = (instance, requests) => {
 	console.log(`Updating instance [${instance}] requests number: ${requests}`);
+
+	instances[instance].reqs = requests;
+	notifyChangedInstances([instance], subscribers);
+};
+
+const registerSubscriber = (ws) => {
+	let subscriber = { ws: ws };
+	subscribers.push(subscriber);
+
+	notifyChangedInstances(Object.keys(instances), [subscriber], true);
 };
 
 const registerInstance = (instance) => {
-	subscribers[instance] = {
+	instances[instance] = {
+		name: instance,
 		reqs: 0
 	};
+
+	notifyChangedInstances([instance], subscribers, true);
 };
 
 const unregisterInstance = (instance) => {
 	delete subscribers[instance];
+	notifyRemovedInstances([instance], subscribers);
 };
 
 const instanceExists = (instance) => {
@@ -78,6 +102,7 @@ const listenerEndpointHandler = (ws, req) => {
 			catch (ex) {
 				console.log(ex);
 			}
+		});
 	}
 	catch (ex) {
 		console.log(ex);

@@ -1,20 +1,16 @@
 
-var monitorChart;
-
-var nextId = 1;
-
-var barColors = {
-	red: 'rgb(255, 99, 132)',
-	orange: 'rgb(255, 159, 64)',
-	yellow: 'rgb(255, 205, 86)',
-	green: 'rgb(75, 192, 192)',
-	blue: 'rgb(54, 162, 235)',
-	purple: 'rgb(153, 102, 255)',
-	grey: 'rgb(201, 203, 207)'
-};
-var nextColor = 0;
-
 const minScaleMaxValue = 10;
+var barColors = [
+	'rgb(255, 99, 132)',		// red
+	'rgb(255, 159, 64)',	// orange
+	'rgb(255, 205, 86)',	// yellow
+	'rgb(75, 192, 192)',		// green
+	'rgb(54, 162, 235)',		// blue
+	'rgb(153, 102, 255)',	// purple
+	'rgb(201, 203, 207)'		// grey
+];
+var nextColor = 0;
+var monitorChart;
 
 
 const setupMonitoringChart = () => {
@@ -55,11 +51,13 @@ const setupMonitoringChart = () => {
 			datasets: []
 		}
 	});
+
+	console.log(monitorChart);
 };
 
 
-const barFillId = (bar) => {
-	bar._id = nextId++;
+const barFillName = (bar, name) => {
+	bar._id = name;
 	return bar;
 };
 
@@ -67,7 +65,7 @@ const getNextColor = () => {
 	let color = barColors[nextColor];
 	nextColor = (nextColor + 1) % barColors.length;
 
-	return color;
+	return Color(color);
 };
 
 const barFillStyle = (bar) => {
@@ -80,7 +78,7 @@ const barFillStyle = (bar) => {
 };
 
 const barFillData = (bar, name, value) => {
-	bar.label = label;
+	bar.label = name;
 	bar.data = [value];
 
 	return bar;
@@ -89,7 +87,7 @@ const barFillData = (bar, name, value) => {
 const makeBar = (name, value) => {
 	return barFillData(
 		barFillStyle(
-			barFillId({})
+			barFillName({}, name)
 		),
 		name, value
 	);
@@ -98,8 +96,8 @@ const makeBar = (name, value) => {
 
 const updateScale = () => {
 	let barData = monitorChart.data.datasets;
-	let currentScaleMax = monitorChart.options.scales.xAxes.ticks.suggestedMax;
-	let dataScaleMax = barData.map(bar => bar.data[0]).reduce((a, b) => Math.max(a, b));
+	let currentScaleMax = monitorChart.options.scales.xAxes[0].ticks.suggestedMax;
+	let dataScaleMax = barData.map(bar => bar.data[0]).reduce((a, b) => Math.max(a, b), 0);
 
 	if (dataScaleMax > currentScaleMax * 0.8) {
 		dataScaleMax = currentScaleMax * 2;
@@ -109,7 +107,7 @@ const updateScale = () => {
 	}
 
 	dataScaleMax = Math.max(dataScaleMax, minScaleMaxValue);
-	monitorChart.options.scales.xAxes.ticks.suggestedMax = dataScaleMax;
+	monitorChart.options.scales.xAxes[0].ticks.suggestedMax = dataScaleMax;
 };
 
 const updateChart = () => {
@@ -124,22 +122,20 @@ const addBar = (name, value) => {
 
 	barData.push(bar);
 	updateChart();
-
-	return bar._id;
 };
 
-const removeBar = (id) => {
+const removeBar = (name) => {
 	let barData = monitorChart.data.datasets;
-	let filteredData = barData.filter((bar) => bar._id !== id);
+	let filteredData = barData.filter((bar) => bar._id !== name);
 
 	monitorChart.data.datasets = filteredData;
 	updateChart();
 };
 
-const updateBar = (id, value) => {
+const updateBar = (name, value) => {
 	let barData = monitorChart.data.datasets;
 
-	barData.filter((bar) => bar._id === id).forEach((bar) => bar.data = [value]);
+	barData.filter((bar) => bar._id === name).forEach((bar) => bar.data = [value]);
 	updateChart();
 };
 

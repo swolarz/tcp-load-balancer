@@ -7,13 +7,13 @@ window.onload = () => {
 
 	let callbacks = {
 		instanceUp: (msg) => {
-			return display.addBar(msg.name, msg.cnt);
+			display.addBar(msg.name, msg.cnt);
 		},
 		instanceDown: (msg) => {
-			removeBar(msg.id);
+			removeBar(msg.name);
 		},
 		instanceUpdate: (msg) => {
-			updateBar(msg.id, msg.cnt);
+			updateBar(msg.name, msg.cnt);
 		}
 	};
 

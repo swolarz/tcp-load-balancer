@@ -10,10 +10,10 @@ window.onload = () => {
 			display.addBar(msg.name, msg.cnt);
 		},
 		instanceDown: (msg) => {
-			removeBar(msg.name);
+			display.removeBar(msg.name);
 		},
 		instanceUpdate: (msg) => {
-			updateBar(msg.name, msg.cnt);
+			display.updateBar(msg.name, msg.cnt);
 		}
 	};
 

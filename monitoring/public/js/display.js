@@ -1,5 +1,6 @@
 
-const minScaleMaxValue = 10;
+const minScaleMaxValue = 100;
+var scaleMax = minScaleMaxValue;
 var barColors = [
 	'rgb(255, 99, 132)',		// red
 	'rgb(255, 159, 64)',	// orange
@@ -51,8 +52,6 @@ const setupMonitoringChart = () => {
 			datasets: []
 		}
 	});
-
-	console.log(monitorChart);
 };
 
 
@@ -96,18 +95,17 @@ const makeBar = (name, value) => {
 
 const updateScale = () => {
 	let barData = monitorChart.data.datasets;
-	let currentScaleMax = monitorChart.options.scales.xAxes[0].ticks.suggestedMax;
 	let dataScaleMax = barData.map(bar => bar.data[0]).reduce((a, b) => Math.max(a, b), 0);
 
-	if (dataScaleMax > currentScaleMax * 0.8) {
-		dataScaleMax = currentScaleMax * 2;
+	if (dataScaleMax > scaleMax * 0.9) {
+		scaleMax = scaleMax * 10;
 	}
-	else if (dataScaleMax < currentScaleMax * 0.5) {
-		dataScaleMax = Math.round(currentScaleMax / 2);
+	else if (dataScaleMax < scaleMax * 0.05) {
+		scaleMax = Math.round(scaleMax / 10);
 	}
 
-	dataScaleMax = Math.max(dataScaleMax, minScaleMaxValue);
-	monitorChart.options.scales.xAxes[0].ticks.suggestedMax = dataScaleMax;
+	scaleMax = Math.max(scaleMax, minScaleMaxValue);
+	monitorChart.options.scales.xAxes[0].ticks.suggestedMax = scaleMax;
 };
 
 const updateChart = () => {

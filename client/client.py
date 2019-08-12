@@ -57,7 +57,7 @@ def log_request_delay():
         yield from asyncio.sleep(0.5)
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--service', required=False, default='http://localhost:5000/')
     parser.add_argument('--workers', required=False, type=int, default=16)
@@ -66,12 +66,11 @@ def main():
 
     loop = asyncio.get_event_loop()
     for _ in range(args.workers):
-        asyncio.async(consume_service(loop, args.service))
+        asyncio.create_task(consume_service(loop, args.service))
 
-    asyncio.async(log_request_delay())
-    loop.run_forever()
+    await asyncio.create_task(log_request_delay())
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
 

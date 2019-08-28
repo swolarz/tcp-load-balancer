@@ -4,12 +4,15 @@ services:
     load-balancer:
         build: ./balancer
         ports:
-            - 4000:4000
+            - 6000:6000
 
     service:
         build: ./service
         ports:
-            - 5001-5100:5000
+            - 5000:5000
+        command: --host="0.0.0.0" --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
 
     monitoring:
         build: ./monitoring

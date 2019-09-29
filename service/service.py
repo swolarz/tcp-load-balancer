@@ -34,15 +34,12 @@ def serve():
         sessions += 1
         sess_num = sessions
     
-    monitoring_ws.send(json.dumps({
-        'reqs': sess_num
-    }))
+    update_requests_status(monitoring_ws, sess_num)
 
     serve_base_time = min_serve_millis + sess_num * per_req_serve_millis
     serve_time = random.randint(serve_base_time, serve_base_time + 50)
 
     time.sleep(serve_time / 1000)
-
     # print('### Served in: {} millis'.format(serve_time))
 
     resp = { 'status': 'OK' }
@@ -50,8 +47,17 @@ def serve():
 
     with sess_cnt_lock:
         sessions -= 1
+        sess_num = sessions
+
+    update_requests_status(monitoring_ws, sess_num)
 
     return resp
+
+
+def update_requests_status(monitoring_ws, sess_num):
+    monitoring_ws.send(json.dumps({
+        'reqs': sess_num
+    }))
 
 
 def prepare_monitoring_websock_url(base_url, instance_name):

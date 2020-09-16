@@ -1,0 +1,4 @@
+
+# Compiled BEAMs and execution files
+ebin/*.beam
+ebin/*.dump

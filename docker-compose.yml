@@ -4,15 +4,50 @@ services:
     load-balancer:
         build: ./balancer
         ports:
-            - 4000:4000
-    
-    service:
-        build: ./service
-        ports:
-            - 5001-5100:5000
+            - 6000:6000
 
     monitoring:
         build: ./monitoring
         ports:
             - 8080:8080
+
+    service-a:
+        build: ./service
+        ports:
+            - 5000:5000
+        command: --host="0.0.0.0" --port=5000 --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
+
+    service-b:
+        build: ./service
+        ports:
+            - 5001:5001
+        command: --host="0.0.0.0" --port=5001 --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
+
+    service-c:
+        build: ./service
+        ports:
+            - 5002:5002
+        command: --host="0.0.0.0" --port=5002 --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
+
+    service-d:
+        build: ./service
+        ports:
+            - 5003:5003
+        command: --host="0.0.0.0" --port=5003 --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
+
+    service-e:
+        build: ./service
+        ports:
+            - 5004:5004
+        command: --host="0.0.0.0" --port=5004 --name="test-instance" --monitoring="ws://monitoring:8080/listener"
+        depends_on:
+            - monitoring
 

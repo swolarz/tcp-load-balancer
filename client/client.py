@@ -59,7 +59,7 @@ def log_request_delay():
 
 async def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--service', required=False, default='http://localhost:5000/')
+    parser.add_argument('--service', required=False, default='http://localhost:6000/')
     parser.add_argument('--workers', required=False, type=int, default=16)
     
     args = parser.parse_args()
